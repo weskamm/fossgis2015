@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="de">
+
+    <head>
+        <meta charset="utf-8">
+
+        <title>Vector Tiles - Performante Übertragung von umfangreichen Vektordaten</title>
+
+        <meta name="description" content="Vector Tiles - Performante Übertragung von umfangreichen Vektordaten">
+        <meta name="author" content="Johannes Weskamm">
+
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+        <link rel="stylesheet" href="resources/css/reveal.css">
+        <link rel="stylesheet" href="resources/css/theme/night.css" id="theme">
+        <link rel="stylesheet" href="resources/css/custom.css">
+
+        <!-- Code syntax highlighting -->
+        <link rel="stylesheet" href="resources/lib/css/zenburn.css">
+        <!--[if lt IE 9]>
+        <script src="resources/lib/js/html5shiv.js"></script>
+        <![endif]-->
+    </head>
+
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section>
+                    <h1>Vector Tiles</h1>
+                    <h4>Performante Übertragung von umfangreichen Vektordaten</h3>
+                    <p>Johannes Weskamm</p>
+                    <small>
+                        <a href="mailto:weskamm@terrestris.de">weskamm@terrestris.de</a><br>
+                        <a href="http://github.com/weskamm">http://github.com/weskamm</a><br>
+                        <a href="http://ows.terrestris.de">ows.terrestris.de</a>
+                    </small>
+                </section>
+                <section id="about" data-background="resources/img/terrestris-logo-black.svg" data-background-size="90%">
+                    <h2>Über uns</h2>
+                    <section id="jw">
+                        <div class="split-info">
+                            <div class="part">
+                                Johannes Weskamm<br /> <img src="resources/img/jw.jpg" class="plain"><br />
+                                <a class="email" href="mailto:weskamm@terrestris.de">weskamm@terrestris.de</a>
+                                <a class="github" href="https://github.com/weskamm">github.com/weskamm</a>
+                            </div>
+                            <div class="part">
+                                <br /> <br /> <br />
+                                <div class="enumeration">
+                                    <ul>
+                                        <li>Diplom Geograph</li>
+                                        <li>Front- und Backendtechnologien</li>
+                                        <li>Entwickler bei <a href="http://www.terrestris.de">terrestris</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section id="terrestris">
+                        <div class="split-info">
+                            <div class="part">
+                                <a href="http://terrestris.de/">terrestris.de</a><br /> <img
+                                    src="resources/img/terrestris-logo-normal.svg" class="plain contrast"
+                                    width="250"><br /> <a class="twitter"
+                                    href="https://twitter.com/terrestrisde/">@terrestrisde</a> <a
+                                    class="github" href="https://github.com/terrestris/">github.com/terrestris</a>
+                            </div>
+                            <div class="part">
+                                <br />
+                                <div class="enumeration">
+                                    <ul>
+                                        <li>OpenSource GIS aus Bonn</li>
+                                        <li>Projekte, Support, Schulung</li>
+                                        <li>Beratung, Planung, Implementierung &amp; Wartung</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+                <section id="vectortiles-general">
+                    <h2>Vector Tiles - Generelles</h2>
+                    <div class="enumeration">
+                        <ul>
+                            <p>Gleiches Prinzip wie gekachelte WMS:</p>
+                            <li class="fragment roll-in">Teile des Bildausschnitts können während des Ladens angezeigt werden
+                                <ul><li>gefühlt schnelleres Ladeverhalten</li></ul>
+                            </li>
+                            <li class="fragment roll-in">gesteigerte Performanz von Clients und JS-Bibliotheken
+                                <ul><li>auch für größere Datenmengen möglich</li></ul>
+                            </li>
+                            <li class="fragment roll-in">Styling auf Clientseite
+                                <ul><li>einwandfreie Darstellung</li></ul>
+                            </li>
+                            <li class="fragment roll-in">Objektinteraktion (Hover / Select)
+                                <ul><li>direktes Feedback, keine Requests</li></ul>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+                <section id="vectortiles-setup">
+                    <h2>Vector Tiles - Beispiel-Setup</h2>
+                    <h4>Serverseitige Komponenten</h4>
+                    <table class="fragment">
+                        <thead>
+                            <tr>
+                                <th>Komponente</th>
+                                <th>Beschreibung</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment">
+                                <td>PostgreSQL / PostGIS</td>
+                                <td>räumliche Datenbank</td>
+                            </tr>
+                            <tr class="fragment">
+                                <td>OSM-Planetfile</td>
+                                <td>globaler OpenStreetMap Datensatz</td>
+                            </tr>
+                            <tr class="fragment">
+                                <td>Imposm 3</td>
+                                <td>performanter Datenbankimport von OSM-Daten</td>
+                            </tr>
+                            <tr class="fragment">
+                                <td>TileStache</td>
+                                <td>generiert Vector Tiles</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+                <section id="vectortiles-setup2">
+                    <h2>Vector Tiles - Beispiel-Setup</h2>
+                    <h4>Clientseitige Komponenten</h4>
+                    <table class="fragment">
+                        <thead>
+                            <tr>
+                                <th>Komponente</th>
+                                <th>Beschreibung</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment">
+                                <td>OpenLayers 3</td>
+                                <td>Web Mapping Framework</td>
+                            </tr>
+                            <tr class="fragment">
+                                <td>Bootstrap</td>
+                                <td>Frontend Design</td>
+                            </tr>
+                            <tr class="fragment">
+                                <td>Canvas fähiger Webbrowser</td>
+                                <td>z.B. Chrome, Safari, Firefox, IE, ...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+                <section id="vectortiles-pro">
+                    <h2>Vector Tiles - Die Vorteile</h2>
+                    <div class="enumeration">
+                        <ul>
+                            <li class="fragment roll-in">Darstellungsqualität (im Vergleich zu gecachten WMS)</li>
+                            <ul class="fragment roll-in">
+                                <li>Keine Unschärfen</li>
+                                <li>Keine groben Auflösungen</li>
+                                <li>sauberes Schriftbild</li>
+                                <li>keine abgeschnittenen Beschriftungen / Symbole</li>
+                                <li>Transformation ohne Qualitätseinbußen</li>
+                                <div class="split-info">
+                                    <div class="part">
+                                        <img src="resources/img/rastertilelabel.png" class="plain contrast" width="700"></img>
+                                    </div>
+                                    <div class="part">
+                                        <h1 style="padding-top: 20%; text-align: center;">😝</h1>
+                                    </div>
+                            </ul>
+                        </ul>
+                    </div>
+                </section>
+                <section id="vectortiles-problems">
+                        <h2>Problemfelder</h2>
+                        <div class="enumeration">
+                            <ul>
+                                <li class="fragment roll-in">gekachelte Datenübertragung -> Geometrien "können" destruktiv geclippt werden</li>
+                                <li class="fragment roll-in">Beschriftungsüberlappungen (label collision) schwer zu vermeiden</li>
+                                <li class="fragment roll-in">Beschriftungen nur schwer "krümmbar" über Canvas</li>
+                                <li class="fragment roll-in">Canvas Implementation von OL3 ist "blocking"</li>
+                                <li class="fragment roll-in">Browser und Clientperformance spielen wichtige Rolle</li>
+                            </ul>
+                        </div>
+                </section>
+                <section id="vectortiles-problems2">
+                        <h2>Problemfelder</h2>
+                        <div class="split-info">
+                            <div class="part">
+                                <img src="resources/img/buildings-clipped.png" class="plain contrast" width="400"></img>
+                            </div>
+                            <div class="part"><br>
+                                 aktiviertes "Clipping" an Kachelgrenzen<h3>⇐</h3><br><br>
+                                 gekrümmte Beschriftungen?<h3>⇓</h3>
+                            </div>
+                        </div>
+                        <div class="split-info">
+                            <div class="part">
+                                <img src="resources/img/rastertilelabelposition.png" class="plain contrast" height="120"></img>
+                            </div>
+                            <div class="part">
+                                <img src="resources/img/vectortilelabelposition.png" class="plain contrast" height="120"></img>
+                            </div>
+                            
+                        </div>
+                        
+                </section>
+                <section id="vectortiles-formats">
+                            <h2>Kachelformate</h2>
+                        <div class="enumeration">
+                            <ul>
+                                <li class="fragment roll-in">MVT - Mapnik Vector Tiles (binär)</li>
+                                <li class="fragment roll-in">Mapbox vector tile format - basiert auf Google Protocol Buffern</li>
+                                <li class="fragment roll-in">Kothic JSON - GeoJSON ähnlich</li>
+                                <li class="fragment roll-in">GeoJSON</li>
+                                <li class="fragment roll-in">TopoJSON (schlankeres GeoJSON)</li>
+                                <li class="fragment roll-in">...</li>
+                            </ul>
+                        </div>
+                </section>
+                <section id="topojson-example">
+                    <h2>TopoJSON Beispiel</h2>
+                    <i>Request:</i>
+                    <pre><code data-trim class="bash">
+                                http://ows.terrestris.de/vectortiles/osm-roads/19/273219/173259.topojson
+                    </code></pre>
+                    <i>Response:</i>
+                    <pre><code data-trim class="bash">
+    {
+    "objects": {
+    "vectile": {
+        "type": "GeometryCollection",
+        "geometries": [
+        {
+            "arcs": [
+            0
+            ],
+            "type": "LineString",
+            "properties": {
+            "z_order": 0,
+            "type": "service",
+            "name": ""
+            },
+            "id": "1f71c1b583"
+        },
+        {
+            "arcs": [
+            1
+            ],
+            "type": "LineString",
+            "properties": {
+            "z_order": 0,
+            "type": "service",
+            "name": ""
+            },
+            "id": "34c6bcd1fc"
+        }
+        ]
+    }
+    },
+    "type": "Topology",
+    "transform": {
+    "translate": [
+        7.604598999023426,
+        51.96626938051444
+    ],
+    "scale": [
+        6.705522537396244e-7,
+        4.131422443251487e-7
+    ]
+    },
+    "arcs": [
+    [
+        [
+        1317,
+        311
+        ],
+        [
+        -238,
+        -83
+        ],
+        [
+        -1035,
+        -311
+        ],
+        [
+        88,
+        -296
+        ],
+        [
+        888,
+        320
+        ],
+        [
+        59,
+        287
+        ]
+    ],
+    [
+        [
+        765,
+        3417
+        ],
+        [
+        -1201,
+        -220
+        ],
+        [
+        441,
+        -2243
+        ],
+        [
+        1124,
+        386
+        ]
+    ]
+    ]
+}</code><pre>
+                </section>
+                <section id="configuration-server">
+                    <h3>Performance Faktoren auf Serverseite - Tilestache und Imposm</h3>
+                    <div class="enumeration">
+                     <ul>
+                         <li class="fragment roll-in">Cache header und gzip Komprimierung</li>
+                         <li class="fragment roll-in">"Clipping" je nach Anwendungsfall / Datensatz</li>
+                         <li class="fragment roll-in">Generalisierung von Geometrien in Imposm / TileStache</li>
+                         <li class="fragment roll-in">sinvolle Selektionen</li>
+                     </ul>
+                   </div>
+                   <pre><code data-trim class="bash" style="height:350px;">{
+    "cache": {
+        "name": "Disk",
+        "path": "/tmp/stache",
+        "umask": "0000",
+        "gzip": ["txt", "text", "json", "xml", "topojson", "geojson", "mvt"]
+    },
+    "layers": {
+        "osm-roads": {
+            "allowed origin": "*",
+            "maximum cache age": 86400,
+            "provider": {
+                "class": "TileStache.Goodies.VecTiles:Provider",
+                "kwargs": {
+                    "clip": false,
+                    "simplify": 1,
+                    "dbinfo": {
+                        "host": "localhost",
+                        "user": "user",
+                        "password": "password",
+                        "database": "imposm",
+                        "port": "5432"
+                    },
+                    "srid": 3857,
+                    "queries": [
+                        null,null,null,null,null,null,null,null,
+                        "SELECT type, z_order, name, geometry AS __geometry__ FROM osm_roads_gen0 WHERE type IN ('highway', 'trunk', 'motorway')-- 8",
+                        "SELECT type, z_order, name, geometry AS __geometry__ FROM osm_roads_gen0 WHERE type IN ('highway', 'trunk', 'motorway')-- 9",
+                        "SELECT type, z_order, name, geometry AS __geometry__ FROM osm_roads_gen0 WHERE type IN ('primary', 'highway', 'trunk', 'motorway', 'rail')-- 10",
+                        "SELECT type, z_order, name, geometry AS __geometry__ FROM osm_roads_gen1 WHERE type IN ('primary', 'highway', 'trunk', 'motorway', 'rail')-- 11",
+                        "SELECT type, z_order, name, geometry AS __geometry__ FROM osm_roads_gen1 WHERE type IN ('primary', 'secondary', 'tertiary', 'highway', 'trunk', 'motorway', 'rail')-- 12",
+                        "SELECT type, z_order, name, geometry AS __geometry__ FROM osm_roads_gen1 WHERE type IN ('primary', 'secondary', 'tertiary', 'residential', 'highway', 'trunk', 'trunk_link', 'motorway', 'motorway_link', 'service', 'footway', 'track', 'living_street', 'unclassified', 'rail')-- 13",
+                        "SELECT type, z_order, name, geometry AS __geometry__ FROM osm_roads WHERE type IN ('primary', 'secondary', 'tertiary', 'residential', 'highway', 'trunk', 'trunk_link', 'motorway', 'motorway_link', 'service', 'footway', 'track', 'living_street', 'unclassified', 'rail')-- 14",
+                        "SELECT type, z_order, name, geometry AS __geometry__ FROM osm_roads WHERE type IN ('primary', 'secondary', 'tertiary', 'residential', 'highway', 'trunk', 'trunk_link', 'motorway', 'motorway_link', 'service', 'footway', 'track', 'living_street', 'unclassified', 'rail')-- 15",
+                        "SELECT type, z_order, name, geometry AS __geometry__ FROM osm_roads WHERE type IN ('primary', 'secondary', 'tertiary', 'residential', 'highway', 'trunk', 'trunk_link', 'motorway', 'motorway_link', 'service', 'footway', 'track', 'living_street', 'unclassified', 'rail')-- 16",
+                        "SELECT type, z_order, name, geometry AS __geometry__ FROM osm_roads WHERE type IN ('primary', 'secondary', 'tertiary', 'residential', 'highway', 'trunk', 'trunk_link', 'motorway', 'motorway_link', 'service', 'footway', 'track', 'living_street', 'unclassified', 'rail')-- 17" 
+                    ]
+                }
+            }
+        }
+    }
+}</code></pre>
+                   </section>
+                   <section id="configuration-client">
+                       <h3>Performance Faktoren auf Clientseite - OL3</h3>
+                       <div class="enumeration">
+                           <ul>
+                               <li class="fragment roll-in">Methoden und Interactions mit Bedacht einsetzen<br>
+                                   <ul><li>ol.interaction.Select - "mouseMove" / "pointerMove" schränkt Performance ein</li></ul>
+                               </li>
+                                <li class="fragment roll-in">sinnvolle Min- und Maxscales / Maßstäbe verwenden</li>
+                                <li class="fragment roll-in">geometrische Überlappungen vermeiden</li>
+                                <li class="fragment roll-in">unnötig aufwändige Stile wo möglich vermeiden</li>
+                                <li class="fragment roll-in">ggf. "ratio" des Layersreduzieren, um Requests und Daten zu verringern</li>
+                                <li class="fragment roll-in">verwenden des <b>ol.layer.Image</b> mit einer <b>ol.source.ImageVector</b>!</li>
+                            </ul>
+                       </div>
+                   </section>
+                   <section id="configuration-client2">
+                       <h3>Wichtige Optionen auf Clientseite - OL3</h3>
+                       <p><b>ol.layer.Image</b> -> <b>ol.source.ImageVector</b> -> <b>ol.source.TileVector</b></p>
+                       <li>enormer Performanceschub durch Skalierung, Translation und Rotation des Bildes während Animation / Interaktion statt ständigem Rendering</li>
+<pre><code>this.roads = new ol.layer.Image({
+    name: 'roads',
+    source: new ol.source.ImageVector({
+        ratio: 1,
+        source: new ol.source.TileVector({
+            format: new ol.format.TopoJSON({
+                defaultProjection: 'EPSG:3857'
+            }),
+            projection: 'EPSG:3857',
+            tileGrid: new ol.tilegrid.XYZ({
+                minZoom: 0,
+                maxZoom: 19
+            }),
+            url: 'http://ows.terrestris.de/vectortiles/osm-roads/{z}/{x}/{y}.topojson'
+        }),
+        style: function(feature, resolution) {...}
+    })
+});</code></pre>
+                   </section>
+                   <section id="vectortiles-proandcons">
+                       <p><h3>Was ist besser?</h3></p>
+                       Egal ob ein Dienst Raster- oder Vektordaten gekachelt ausliefert, beide Varianten haben ihre Vor- und Nachteile
+                       <table class="fragment">
+                        <thead>
+                            <tr>
+                                <th>Anforderung</th>
+                                <th>Art der Kacheln</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment">
+                                <td>aufwändig gestaltete oder sehr komplexe Geometrien</td>
+                                <td>Raster</td>
+                            </tr>
+                            <tr class="fragment">
+                                <td>spezielle Beschriftungen (Kollisionsvermeidung, Krümmungen, ...)</td>
+                                <td>Raster</td>
+                            </tr>
+                            <tr class="fragment">
+                                <td>interaktive Objekte in der Karte (Hover / Select)</td>
+                                <td>Vektor</td>
+                            </tr>
+                            <tr class="fragment">
+                                <td>hohe Ansprüche an die Darstellungsqualität von Geometrien</td>
+                                <td>Vektor</td>
+                            </tr>
+                            <tr class="fragment">
+                                <td>Vermeiden / Reduzieren von Caching auf der Serverseite</td>
+                                <td>Vektor</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                   </section>
+                   <section id="vectortiles-livedemo">
+                       <p>Live-Demo</p>
+                       <h3>
+                           <a href="http://ows.terrestris.de/ol3vectortiles/">http://ows.terrestris.de/ol3vectortiles/</a>
+                       </h3>
+                   </section>
+                   <section id="imprint">
+                       <h3>Impressum</h3>
+                       <ul>
+	                       <li>Autor:
+	                           <ul>
+	                               <li>Johannes Weskamm<br>
+	                                   terrestris GmbH &amp; Co. KG<br>
+	                                   <a href="mailto:weskamm@terrestris.de">weskamm@terrestris.de</a>
+	                               </li>
+	                           </ul>
+	                       </li>
+	                       <li>
+	                           Lizenz: <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>
+	                       </li>
+	                       <li>
+	                           <a href="http://github.com/weskamm/fossgis2015">Vortragsfolien</a>
+	                       </li>
+	                   </ul>
+                   </section>
+               </section>
+            </div>
+        </div>
+
+        <script src="resources/lib/js/head.min.js"></script>
+        <script src="resources/js/reveal.js"></script>
+
+        <script>
+
+            // Full list of configuration options available at:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+
+                transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+                // Optional reveal.js plugins
+                dependencies: [
+                    { src: 'resources/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+                    { src: 'resources/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'resources/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'resources/plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    { src: 'resources/plugin/zoom-js/zoom.js', async: true },
+                    { src: 'resources/plugin/notes/notes.js', async: true }
+                ]
+            });
+
+        </script>
+
+    </body>
+</html>

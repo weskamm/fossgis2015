@@ -1,0 +1,106 @@
+.reveal pre code {
+	font-size: 1.0em;
+}
+
+.reveal code {
+	padding: 3px;
+	overflow: auto;
+	word-wrap: normal;
+	background: #3F3F3F;
+	color: #DCDCDC;
+	font-size: 0.75em;
+}
+
+.reveal section img.plain {
+    background: none;
+    border: none;
+    box-shadow: none;
+    border-radius: 15px;
+}
+
+.reveal section img.contrast {
+    background-color: #fff;
+    border: 10px solid #fff;
+    box-shadow: 0 0 5px 5px #fff;
+    border-radius: 5px;
+}
+
+.reveal section h2 {
+    border-bottom: 1px inset #333;
+    margin-bottom: 0.5em;
+}
+
+.reveal section p.subtle {
+    margin-top: 5em;
+}
+
+.reveal section p.subtle a {
+    font-size: smaller;
+}
+
+.reveal section div.split-info {
+    margin: 5px;
+    clear: both;
+}
+
+.reveal section div.part {
+    margin: 5px;
+    float: left;
+    width: 48%;
+}
+
+.reveal section div.part .enumeration {
+    text-align: left;
+}
+
+.reveal section a.email,.reveal section a.twitter,.reveal section a.github {
+	display: inline;
+    padding-left: 1.2em;
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    /* background-size: contain; */
+    background-size: 1.0em;
+}
+
+.reveal section a.email {
+    background-image: url("../img/mail-logo.png");
+}
+
+.reveal section a.github {
+    background-image: url("../img/github-logo.png");
+}
+
+.reveal section a.twitter {
+    background-image: url("../img/twitter-logo.png");
+}
+
+.reveal section .highlight {
+	text-shadow: 0 0 20px orange
+}
+
+.reveal section .unhighlight {
+    opacity: 0.7;
+}
+
+.reveal section .force-lowercase {
+	text-transform:lowercase;
+}
+
+.reveal code.small {
+  font-size: 0.8em;
+  line-height: 1.2em;
+}
+
+.reveal section #books div {
+	float: left;
+	width: 33%
+}
+
+.reveal section #ie-evolution {
+	margin-top: 30px;
+	text-align: center;
+}
+.reveal section #ie-evolution div {
+    float: left;
+    width: 50%
+}
